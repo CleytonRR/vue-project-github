@@ -1,14 +1,12 @@
 <template>
   <div class="container">
     <h1>Vue.js + Github</h1>
-    <p class="lead">
-      Página que lista issues de um repositório do Github, usando Vue.js.
-    </p>
+    <p class="lead">Página que lista issues de um repositório do Github, usando Vue.js.</p>
 
     <div class="row">
       <div class="col">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="github username" />
+          <input v-model="username" type="text" class="form-control" placeholder="github username" />
         </div>
       </div>
 
@@ -25,8 +23,8 @@
 
       <div class="col-3">
         <div class="form-group">
-          <button class="btn btn-success">GO</button>
-          <button class="btn btn-danger">LIMPAR</button>
+          <button @click.prevent.stop="getIssues()" class="btn btn-success">GO</button>
+          <button @click.prevent.stop="reset()" class="btn btn-danger">LIMPAR</button>
         </div>
       </div>
     </div>
@@ -44,20 +42,46 @@
       </thead>
 
       <tbody>
-        <tr>
-          <td class="text-center" colspan="2"></td>
+        <tr v-if="!!issues.length" v-for="issue in issues" :key="issue.number">
+          <td>{{ issue.number }}</td>
+          <td>{{ issue.title }}</td>
         </tr>
 
-        <tr>
-          <td></td>
-
-          <td></td>
-        </tr>
-
-        <tr>
+        <tr v-if="!!!issues.length">
           <td class="text-center" colspan="2">Nenhuma issue encontrada!</td>
         </tr>
       </tbody>
     </table>
   </div>
 </template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  name: 'GitHubIssues',
+
+  data() {
+    return {
+      username: '',
+      repository: '',
+      issues: [],
+    };
+  },
+
+  methods: {
+    reset() {
+      this.username = '';
+      this.repository = '';
+    },
+
+    async getIssues() {
+      if (this.username && this.repository) {
+        const url = `https://api.github.com/repos/${this.username}/${this.repository}/issues`;
+        const result = await axios.get(url);
+        this.issues = result.data;
+      }
+    },
+  },
+};
+</script>
