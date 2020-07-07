@@ -47,7 +47,15 @@
       </thead>
 
       <tbody>
-        <fragment v-if="!!issues.length">
+        <tr v-if="loader.getIssues">
+          <td class="text-center" colspan="2">
+            <div class="spinner-border text-primary" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </td>
+        </tr>
+
+        <fragment v-if="!!issues.length && !loader.getIssues">
           <tr v-for="issue in issues" :key="issue.number">
             <td>{{ issue.number }}</td>
             <td>{{ issue.title }}</td>
@@ -75,6 +83,9 @@ export default {
       username: '',
       repository: '',
       issues: [],
+      loader: {
+        getIssues: false,
+      },
     };
   },
 
@@ -86,9 +97,11 @@ export default {
 
     async getIssues() {
       if (this.username && this.repository) {
+        this.loader.getIssues = true;
         const url = `https://api.github.com/repos/${this.username}/${this.repository}/issues`;
         const result = await axios.get(url);
         this.issues = result.data;
+        this.loader.getIssues = false;
       }
     },
   },
