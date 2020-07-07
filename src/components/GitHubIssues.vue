@@ -38,13 +38,7 @@
     <hr />
     <br />
 
-    <template v-if="selectedIssue.id">
-      <h2>{{ selectedIssue.title }}</h2>
-      <div>{{ selectedIssue.body }}</div>
-      <a href="" class="btn btn-primary" @click.prevent.stop="clearIssue()">Voltar</a>
-    </template>
-
-    <table v-if="!selectedIssue.id" class="table table-sm table-bordered">
+    <table class="table table-sm table-bordered">
       <thead>
         <tr>
           <th width="100">Número</th>
@@ -64,10 +58,13 @@
         <fragment v-if="!!issues.length && !loader.getIssues">
           <tr v-for="issue in issues" :key="issue.number">
             <td>
-              <a @click.prevent.stop="getIssue(issue)" href="">{{ issue.number }}</a>
-              <div v-if="issue.is_loading" class="spinner-border text-primary" role="status">
-                <span class="sr-only">Loading...</span>
-              </div>
+              <router-link
+                :to="{
+                  name: 'GitHubIssue',
+                  params: { name: username, repo: repository, issue: issue.number },
+                }"
+                >{{ issue.number }}</router-link
+              >
             </td>
             <td>{{ issue.title }}</td>
           </tr>
@@ -94,10 +91,8 @@ export default {
       username: '',
       repository: '',
       issues: [],
-      selectedIssue: {},
       loader: {
         getIssues: false,
-        getIssue: false,
       },
     };
   },
@@ -116,20 +111,6 @@ export default {
         this.issues = result.data;
         this.loader.getIssues = false;
       }
-    },
-
-    async getIssue(issue) {
-      if (this.username && this.repository) {
-        this.$set(issue, 'is_loading', true);
-        const url = `https://api.github.com/repos/${this.username}/${this.repository}/issues/${issue.number}`;
-        const result = await axios.get(url);
-        this.selectedIssue = result.data;
-        this.$set(issue, 'is_loading', false);
-      }
-    },
-
-    clearIssue() {
-      this.selectedIssue = {};
     },
   },
 };
