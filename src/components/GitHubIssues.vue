@@ -64,7 +64,10 @@
         <fragment v-if="!!issues.length && !loader.getIssues">
           <tr v-for="issue in issues" :key="issue.number">
             <td>
-              <a @click.prevent.stop="getIssue(issue.number)" href="">{{ issue.number }}</a>
+              <a @click.prevent.stop="getIssue(issue)" href="">{{ issue.number }}</a>
+              <div v-if="issue.is_loading" class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
             </td>
             <td>{{ issue.title }}</td>
           </tr>
@@ -115,13 +118,13 @@ export default {
       }
     },
 
-    async getIssue(issueId) {
+    async getIssue(issue) {
       if (this.username && this.repository) {
-        this.loader.getIssue = true;
-        const url = `https://api.github.com/repos/${this.username}/${this.repository}/issues/${issueId}`;
+        this.$set(issue, 'is_loading', true);
+        const url = `https://api.github.com/repos/${this.username}/${this.repository}/issues/${issue.number}`;
         const result = await axios.get(url);
         this.selectedIssue = result.data;
-        this.loader.getIssue = false;
+        this.$set(issue, 'is_loading', false);
       }
     },
 
