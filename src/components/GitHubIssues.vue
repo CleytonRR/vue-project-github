@@ -6,7 +6,12 @@
     <div class="row">
       <div class="col">
         <div class="form-group">
-          <input v-model="username" type="text" class="form-control" placeholder="github username" />
+          <input
+            v-model="username"
+            type="text"
+            class="form-control"
+            placeholder="github username"
+          />
         </div>
       </div>
 
@@ -42,10 +47,12 @@
       </thead>
 
       <tbody>
-        <tr v-if="!!issues.length" v-for="issue in issues" :key="issue.number">
-          <td>{{ issue.number }}</td>
-          <td>{{ issue.title }}</td>
-        </tr>
+        <fragment v-if="!!issues.length">
+          <tr v-for="issue in issues" :key="issue.number">
+            <td>{{ issue.number }}</td>
+            <td>{{ issue.title }}</td>
+          </tr>
+        </fragment>
 
         <tr v-if="!!!issues.length">
           <td class="text-center" colspan="2">Nenhuma issue encontrada!</td>
@@ -56,10 +63,12 @@
 </template>
 
 <script>
+import { Fragment } from 'vue-fragment';
 import axios from 'axios';
 
 export default {
   name: 'GitHubIssues',
+  components: { Fragment },
 
   data() {
     return {
