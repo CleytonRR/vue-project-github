@@ -38,7 +38,13 @@
     <hr />
     <br />
 
-    <table class="table table-sm table-bordered">
+    <template v-if="selectedIssue.id">
+      <h2>{{ selectedIssue.title }}</h2>
+      <div>{{ selectedIssue.body }}</div>
+      <a href="" class="btn btn-primary" @click.prevent.stop="clearIssue()">Voltar</a>
+    </template>
+
+    <table v-if="!selectedIssue.id" class="table table-sm table-bordered">
       <thead>
         <tr>
           <th width="100">Número</th>
@@ -57,12 +63,14 @@
 
         <fragment v-if="!!issues.length && !loader.getIssues">
           <tr v-for="issue in issues" :key="issue.number">
-            <td>{{ issue.number }}</td>
+            <td>
+              <a @click.prevent.stop="getIssue(issue.number)" href="">{{ issue.number }}</a>
+            </td>
             <td>{{ issue.title }}</td>
           </tr>
         </fragment>
 
-        <tr v-if="!!!issues.length">
+        <tr v-if="!!!issues.length && !loader.getIssues">
           <td class="text-center" colspan="2">Nenhuma issue encontrada!</td>
         </tr>
       </tbody>
@@ -83,8 +91,10 @@ export default {
       username: '',
       repository: '',
       issues: [],
+      selectedIssue: {},
       loader: {
         getIssues: false,
+        getIssue: false,
       },
     };
   },
@@ -103,6 +113,20 @@ export default {
         this.issues = result.data;
         this.loader.getIssues = false;
       }
+    },
+
+    async getIssue(issueId) {
+      if (this.username && this.repository) {
+        this.loader.getIssue = true;
+        const url = `https://api.github.com/repos/${this.username}/${this.repository}/issues/${issueId}`;
+        const result = await axios.get(url);
+        this.selectedIssue = result.data;
+        this.loader.getIssue = false;
+      }
+    },
+
+    clearIssue() {
+      this.selectedIssue = {};
     },
   },
 };
