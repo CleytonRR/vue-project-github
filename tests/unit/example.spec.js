@@ -27,4 +27,12 @@ describe('Tests for component GitHubIssues.vue', () => {
     await wrapper.vm.getIssues();
     expect(wrapper.find('.title-issue').exists()).toBe(true);
   });
+
+  it('Ensure clear states when reset function is called', () => {
+    wrapper.setData({ username: mockValidName, repository: mockValidRepository });
+    wrapper.vm.reset();
+    const { username, repository } = wrapper.vm.$data;
+    expect(username).toBe('');
+    expect(repository).toBe('');
+  });
 });
