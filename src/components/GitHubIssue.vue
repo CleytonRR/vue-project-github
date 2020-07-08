@@ -4,7 +4,11 @@
       <span class="sr-only">Loading...</span>
     </div>
 
-    <div v-if="!loader.getIssue && issue.number">
+    <div v-if="error" class="alert alert-danger">
+      <p>Erro ao buscar os detalhes</p>
+    </div>
+
+    <div class="issue-detail" v-if="!loader.getIssue && issue.number">
       <h1>Issue {{ issue.nubmer }}</h1>
       <h2>{{ issue.title }}</h2>
       <div>{{ issue.body }}</div>
@@ -29,16 +33,22 @@ export default {
       loader: {
         getIssue: false,
       },
+      error: false,
     };
   },
 
   methods: {
     async getIssue() {
-      const { name, repo, issue } = this.$route.params;
       this.loader.getIssue = true;
-      const url = `https://api.github.com/repos/${name}/${repo}/issues/${issue}`;
-      const result = await axios.get(url);
-      this.issue = result.data;
+      try {
+        const { name, repo, issue } = this.$route.params;
+        const url = `https://api.github.com/repos/${name}/${repo}/issues/${issue}`;
+        const result = await axios.get(url);
+        this.issue = result.data;
+      } catch (error) {
+        this.error = true;
+      }
+
       this.loader.getIssue = false;
     },
   },
