@@ -1,12 +1,13 @@
 import { shallowMount } from '@vue/test-utils';
-import HelloWorld from '@/components/HelloWorld.vue';
+import GitHubIssues from '@/components/GitHubIssues.vue';
 
-describe('HelloWorld.vue', () => {
-  it('renders props.msg when passed', () => {
-    const msg = 'new message';
-    const wrapper = shallowMount(HelloWorld, {
-      propsData: { msg },
-    });
-    expect(wrapper.text()).toMatch(msg);
+describe('Tests for component GitHubIssues.vue', () => {
+  it('Render alert error if name or repository not exists', async () => {
+    const name = 'failName';
+    const repository = 'FailRepository';
+    const wrapper = shallowMount(GitHubIssues);
+    wrapper.setData({ username: name, repository });
+    await wrapper.vm.getIssues();
+    expect(wrapper.find('.alert').exists()).toBe(true);
   });
 });
