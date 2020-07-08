@@ -59,7 +59,7 @@
         </tr>
 
         <fragment v-if="showIssues">
-          <tr v-for="issue in issues" :key="issue.number">
+          <tr class="title-issue" v-for="issue in issues" :key="issue.number">
             <td>
               <router-link
                 :to="{
